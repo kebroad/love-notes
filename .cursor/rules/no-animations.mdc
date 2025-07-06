@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Don't add animations to the frontend via CSS, it messes with excalidraw and I do not want animations

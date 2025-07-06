@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Always reference the implementation plan in the README.md on how to implement what i ask you to do.
+
+Dont write content that can be generated, tell me what commands to run locally instead to generate the content

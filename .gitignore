@@ -1,0 +1,413 @@
+# =============================================================================
+# LOVE NOTES PROJECT - GITIGNORE
+# Comprehensive ignore patterns for React/TypeScript frontend, Golang backend, Python scripts
+# =============================================================================
+
+# =============================================================================
+# NODE.JS / NPM / YARN
+# =============================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# =============================================================================
+# REACT / VITE / WEBPACK
+# =============================================================================
+# Build outputs
+dist/
+build/
+.vite/
+.parcel-cache/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Cache directories
+.cache/
+.vite-cache/
+.eslintcache
+.stylelintcache
+
+# =============================================================================
+# TYPESCRIPT
+# =============================================================================
+*.tsbuildinfo
+.tscache/
+
+# =============================================================================
+# GOLANG
+# =============================================================================
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories (remove the comment below to include it)
+vendor/
+
+# Go workspace file
+go.work
+
+# Air live reload tool
+tmp/
+
+# =============================================================================
+# PYTHON
+# =============================================================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# =============================================================================
+# FIREBASE
+# =============================================================================
+.firebase/
+.firebaserc
+firebase-debug.log
+firebase-debug.*.log
+
+# =============================================================================
+# DATABASES
+# =============================================================================
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# =============================================================================
+# LOGS
+# =============================================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# =============================================================================
+# RUNTIME DATA
+# =============================================================================
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# =============================================================================
+# COVERAGE DIRECTORY USED BY TOOLS LIKE ISTANBUL
+# =============================================================================
+coverage/
+*.lcov
+
+# =============================================================================
+# NYNYC TEST COVERAGE
+# =============================================================================
+.nyc_output
+
+# =============================================================================
+# GRUNT INTERMEDIATE STORAGE
+# =============================================================================
+.grunt
+
+# =============================================================================
+# BOWER DEPENDENCY DIRECTORY
+# =============================================================================
+bower_components
+
+# =============================================================================
+# LOCK FILES (OPTIONAL - UNCOMMENT IF NEEDED)
+# =============================================================================
+# package-lock.json
+# yarn.lock
+
+# =============================================================================
+# EDITOR AND IDE FILES
+# =============================================================================
+# VSCode
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+*.swp
+*.swo
+*~
+
+# Vim
+*.swp
+*.swo
+*.swn
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+
+# Atom
+.atom/
+
+# =============================================================================
+# OPERATING SYSTEM FILES
+# =============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# =============================================================================
+# TEMPORARY FILES
+# =============================================================================
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+*.rej
+*.patch
+
+# =============================================================================
+# SECURITY AND SECRETS
+# =============================================================================
+# API keys and secrets
+.env.secret
+.env.private
+secrets.json
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# =============================================================================
+# HARDWARE/RASPBERRY PI SPECIFIC
+# =============================================================================
+# Compiled Python modules for hardware
+*.pyc
+__pycache__/
+
+# Hardware logs
+hardware_logs/
+device_logs/
+
+# =============================================================================
+# PROJECT SPECIFIC
+# =============================================================================
+# Love Notes specific files
+uploads/
+temp_images/
+note_images/
+user_data/
+session_data/
+
+# Development and testing
+test_output/
+debug_output/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts 

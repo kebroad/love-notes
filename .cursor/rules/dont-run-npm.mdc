@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+For the frontend, do not try to run npm run dev everytime. its running in the background

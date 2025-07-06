@@ -1,0 +1,22 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Cursor Rules for Love Notes Project
+
+## Excalidraw Integration Requirements
+
+### CRITICAL: React Version Compatibility
+- **ALWAYS use React 18.x with Excalidraw** - Never use React 19+
+- Excalidraw 0.18.0 dependencies (Radix UI) only support React 16-18
+- React 19 causes massive peer dependency warnings and canvas rendering issues
+- Use exact versions: `react@18.3.1` and `react-dom@18.3.1`
+- Update TypeScript types: `@types/react@18` and `@types/react-dom@18`
+
+
+## Implementation Plan Reference
+- Always reference README.md implementation plan before starting development
+- Follow the 5-phase approach: Backend → Frontend → Hardware → Integration → Testing
+- Use the specified tech stack: React + TypeScript, Golang, Python, Firebase 
+

@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Any changes I make between prompts should not be reverted, I am customizing it to the way I want. if you still think you should revert a change that was made, prompt me for approval first
