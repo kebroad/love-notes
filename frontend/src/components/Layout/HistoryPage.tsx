@@ -93,7 +93,7 @@ const HistoryPage = ({ user }: HistoryPageProps) => {
       <div className="history-page">
         <div className="error">
           <p>❌ {error}</p>
-          <button onClick={loadHistory} className="retry-button">
+          <button onClick={loadHistory} className="retry-button btn-primary">
             Try Again
           </button>
         </div>

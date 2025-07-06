@@ -81,7 +81,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
 
           {error && <div className="error-message">{error}</div>}
 
-          <button type="submit" className="login-button" disabled={loading}>
+          <button type="submit" className="login-button btn-primary" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
 

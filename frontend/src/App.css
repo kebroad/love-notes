@@ -69,7 +69,7 @@ html, body {
   padding: 10px;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
   justify-content: flex-start;
   height: 3.5rem;
 }
@@ -151,7 +151,7 @@ html, body {
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   min-height: 3.5rem;
 }
@@ -207,12 +207,12 @@ html, body {
 }
 
 .drawer-item:hover {
-  background: rgba(210, 105, 30, 0.2);
-  color: #d2691e;
+  background: rgba(194, 84, 84, 0.2);
+  color: #c25454;
 }
 
 .drawer-item.active {
-  background: #d2691e;
+  background: #c25454;
   color: white;
 }
 
@@ -236,7 +236,6 @@ html, body {
 
 .drawer-text {
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
@@ -325,7 +324,7 @@ html, body {
   width: 60vw;
   aspect-ratio: 8/5;
   margin: 0 auto;
-  background: white;
+  background: #000000;
   /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.0); */
   position: relative;
   flex-shrink: 0;
@@ -382,117 +381,126 @@ html, body {
   color: #2c3e50;
 }
 
+.message-display {
+  margin-top: 20px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  max-width: 200px;
+  word-wrap: break-word;
+  background: rgba(255, 255, 255, 0.1);
+  color: #2c3e50;
+  border: 1px solid rgba(194, 84, 84, 0.3);
+}
+
 /* =============================================================================
-   BUTTON COMPONENTS
+   BUTTON COMPONENTS - UNIFIED THEME
    ============================================================================= */
 
-.clear-button {
-  background: #d2691e;
-  color: white;
-  border: 2px solid #d2691e;
-  box-shadow: 0 4px 12px rgba(210, 105, 30, 0.3);
-}
-
-.clear-button:hover:not(:disabled) {
-  background: #b8611a;
-  border-color: #b8611a;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(210, 105, 30, 0.4);
-}
-
-.send-button {
-  background: #d2691e;
-  color: white;
-  border: 2px solid #d2691e;
-  box-shadow: 0 4px 12px rgba(210, 105, 30, 0.3);
-}
-
-.send-button:hover:not(:disabled) {
-  background: #b8611a;
-  border-color: #b8611a;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(210, 105, 30, 0.4);
-}
-
-.login-button {
+/* Base button theme with #c25454 color */
+.btn-primary {
   font-family: 'Montserrat', sans-serif;
-  background: #d2691e;
+  background: #c25454;
   color: white;
-  padding: 16px 32px;
-  border: 2px solid #d2691e;
+  border: 2px solid #c25454;
   border-radius: 8px;
-  font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  position: relative;
-  box-shadow: 0 4px 12px rgba(210, 105, 30, 0.3);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(194, 84, 84, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.2;
 }
 
-.login-button:hover:not(:disabled) {
-  background: #b8611a;
-  border-color: #b8611a;
+.btn-primary:hover:not(:disabled) {
+  background: #a94545;
+  border-color: #a94545;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(210, 105, 30, 0.4);
+  box-shadow: 0 6px 20px rgba(194, 84, 84, 0.4);
 }
 
-.login-button:active {
+.btn-primary:active {
   transform: translateY(0);
 }
 
-.logout-button {
-  font-family: 'Montserrat', sans-serif;
-  background: #d2691e;
-  color: white;
-  padding: 10px 20px;
-  border: 2px solid #d2691e;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.logout-button:hover {
-  background: #b8611a;
-  border-color: #b8611a;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(210, 105, 30, 0.3);
-}
-
-.retry-button {
-  background: #d2691e;
-  color: white;
-  padding: 12px 24px;
-  border: 2px solid #d2691e;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 15px;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 12px rgba(210, 105, 30, 0.3);
-}
-
-.retry-button:hover {
-  background: #b8611a;
-  border-color: #b8611a;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(210, 105, 30, 0.4);
-}
-
-.control-button:disabled,
-.login-button:disabled {
+.btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
+
+.btn-primary svg {
+  font-size: 1.8rem;
+  margin-bottom: 0.3rem;
+}
+
+.control-button {
+  height: 15%;
+  width: 80%;
+  border-radius: 12px;
+  font-size: 1.1rem;
+}
+
+.clear-button {
+  /* Inherits from btn-primary */
+}
+
+.send-button {
+  /* Inherits from btn-primary */
+  font-size: 1.1rem;
+}
+
+.login-button {
+  padding: 16px 32px;
+  font-size: 1.1rem;
+  border-radius: 8px;
+}
+
+.logout-button {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+}
+
+.retry-button {
+  padding: 12px 24px;
+  border-radius: 6px;
+  margin-top: 15px;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 14px 20px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: white;
+  color: #2c2c2c;
+  border: 2px solid #e5e5e5;
+}
+
+.tab-button:hover {
+  background: #f8f8f8;
+  border-color: #c25454;
+  color: #c25454;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(194, 84, 84, 0.2);
+}
+
+/* .tab-button.active {
+  background: #c25454;
+  border-color: #c25454;
+  color: white;
+  box-shadow: 0 4px 12px rgba(194, 84, 84, 0.3);
+} */
 
 /* =============================================================================
    FORM COMPONENTS
@@ -648,38 +656,6 @@ html, body {
   gap: 4px;
 }
 
-.tab-button {
-  font-family: 'Montserrat', sans-serif;
-  flex: 1;
-  padding: 14px 20px;
-  border: 2px solid #e5e5e5;
-  border-radius: 6px;
-  background: white;
-  color: #2c2c2c;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-size: 0.9rem;
-}
-
-.tab-button:hover {
-  background: #f8f8f8;
-  border-color: #d2691e;
-  color: #d2691e;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(210, 105, 30, 0.2);
-}
-
-.tab-button.active {
-  background: #d2691e;
-  border-color: #d2691e;
-  color: white;
-  box-shadow: 0 4px 12px rgba(210, 105, 30, 0.3);
-}
-
 .history-content {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
@@ -764,5 +740,156 @@ html, body {
 @media (max-width: 768px) {
   .app-title {
     font-size: 2rem;
+  }
+}
+
+/* Secondary button theme */
+.btn-secondary {
+  font-family: 'Montserrat', sans-serif;
+  background: white;
+  color: #2c2c2c;
+  border: 2px solid #e5e5e5;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.2;
+  padding: 12px 24px;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #f8f8f8;
+  border-color: #c25454;
+  color: #c25454;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(194, 84, 84, 0.2);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* =============================================================================
+   MODAL COMPONENTS
+   ============================================================================= */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.modal-content {
+  background: #2c2c2c;
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease forwards;
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: white;
+}
+
+.modal-header p {
+  font-family: 'Montserrat', sans-serif;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  font-size: 1rem;
+}
+
+.modal-preview {
+  text-align: center;
+  margin: 20px 0;
+  padding: 20px;
+  background: #2c2c2c;
+  border-radius: 0;
+}
+
+.preview-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.modal-actions button {
+  flex: 1;
+  min-width: 120px;
+  padding: 12px 24px;
+  font-size: 0.9rem;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Mobile responsive modal */
+@media (max-width: 768px) {
+  .modal-content {
+    padding: 20px;
+    margin: 20px;
+  }
+  
+  .modal-header h3 {
+    font-size: 1.5rem;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .modal-actions button {
+    width: 100%;
   }
 }
