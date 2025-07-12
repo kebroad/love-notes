@@ -9,6 +9,7 @@ import '@excalidraw/excalidraw/index.css';
 import LoginPage from './components/Auth/LoginPage';
 import Layout from './components/Layout/Layout';
 import CanvasPage from './components/Canvas/CanvasPage';
+import PaintPage from './components/Paint/PaintPage';
 import HistoryPage from './components/Layout/HistoryPage';
 
 import './App.css';
@@ -22,7 +23,14 @@ function App() {
     const storedUser = localStorage.getItem('loveNotesUser');
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        // Validate that the user data is current (only Kevin and Nicole allowed)
+        if (parsedUser.username === 'kevin' || parsedUser.username === 'nicole') {
+          setUser(parsedUser);
+        } else {
+          // Clear invalid/old user data
+          localStorage.removeItem('loveNotesUser');
+        }
       } catch (error) {
         console.error('Error parsing stored user:', error);
         localStorage.removeItem('loveNotesUser');
@@ -39,11 +47,12 @@ function App() {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('loveNotesUser');
+    localStorage.removeItem('loveNotesPassword');
   };
 
   if (loading) {
     return (
-      <div className="loading-screen">
+      <div className="loading-screen app-background">
         <div className="loading-spinner"></div>
         <p>Loading Love Notes...</p>
       </div>
@@ -58,10 +67,11 @@ function App() {
         ) : (
           <Layout user={user} onLogout={handleLogout}>
             <Routes>
-              <Route path="/" element={<Navigate to="/canvas" replace />} />
-              <Route path="/canvas" element={<CanvasPage user={user} />} />
+              <Route path="/" element={<Navigate to="/draw" replace />} />
+              <Route path="/draw" element={<CanvasPage user={user} />} />
+              <Route path="/paint" element={<PaintPage user={user} />} />
               <Route path="/history" element={<HistoryPage user={user} />} />
-              <Route path="*" element={<Navigate to="/canvas" replace />} />
+              <Route path="*" element={<Navigate to="/draw" replace />} />
             </Routes>
           </Layout>
         )}

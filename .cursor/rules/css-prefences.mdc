@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+I don't like random hardcoded measurements in css (ie nothing in px, rem instead). I like things laid out in a neat organized way, centered when possible

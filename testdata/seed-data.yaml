@@ -1,0 +1,39 @@
+users:
+  kevin:
+    password: "password123"
+    images:
+      - 1704067200  # 2024-01-01 00:00:00 UTC
+      - 1704153600  # 2024-01-02 00:00:00 UTC
+      - 1704240000  # 2024-01-03 00:00:00 UTC
+    latest: 1704240000
+  nicole:
+    password: "password123"
+    images:
+      - 1704326400  # 2024-01-04 00:00:00 UTC
+      - 1704412800  # 2024-01-05 00:00:00 UTC
+      - 1704499200  # 2024-01-06 00:00:00 UTC
+    latest: 1704499200
+
+# Image files that should be seeded into Firebase Storage
+# These correspond to the timestamps in the users' image arrays above
+image_files:
+  kevin:
+    - filename: "1704067200.jpg"
+      timestamp: 1704067200
+      path: "images/kevin/1704067200.jpg"
+    - filename: "1704153600.jpg"
+      timestamp: 1704153600
+      path: "images/kevin/1704153600.jpg"
+    - filename: "1704240000.jpg"
+      timestamp: 1704240000
+      path: "images/kevin/1704240000.jpg"
+  nicole:
+    - filename: "1704326400.jpg"
+      timestamp: 1704326400
+      path: "images/nicole/1704326400.jpg"
+    - filename: "1704412800.jpg"
+      timestamp: 1704412800
+      path: "images/nicole/1704412800.jpg"
+    - filename: "1704499200.jpg"
+      timestamp: 1704499200
+      path: "images/nicole/1704499200.jpg" 

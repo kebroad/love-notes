@@ -2,9 +2,12 @@ import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import { Excalidraw, convertToExcalidrawElements, exportToBlob } from '@excalidraw/excalidraw';
 import { BsFillSendFill } from "react-icons/bs";
 import { FaTrashAlt } from "react-icons/fa";
-import { MdCancel } from "react-icons/md";
+import { MdCancel, MdColorLens, MdCenterFocusStrong } from "react-icons/md";
 import type { User } from '../../types';
 import { notesAPI } from '../../services/api';
+import { getStoredUser } from '../../utils/auth';
+import { useCanvasShared } from '../../hooks/useCanvasShared';
+import SendConfirmModal from '../shared/SendConfirmModal';
 
 interface CanvasPageProps {
   user: User;
@@ -13,19 +16,25 @@ interface CanvasPageProps {
 const CanvasPage = ({ user }: CanvasPageProps) => {
   const excalidrawRef = useRef<any>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
-  const [sending, setSending] = useState(false);
-  const [message, setMessage] = useState('');
   const [canvasDimensions, setCanvasDimensions] = useState({ width: 640, height: 400 });
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+  const [showColorModal, setShowColorModal] = useState(false);
+  const [canvasColor, setCanvasColor] = useState('#ffffff');
+  const [tempCanvasColor, setTempCanvasColor] = useState('#ffffff');
 
-  const getRecipientUserId = () => {
-    return user.id === 'user_joe' ? 'user_jane' : 'user_joe';
-  };
-
-  const getRecipientName = () => {
-    return user.username === 'joe' ? 'Jane' : 'Joe';
-  };
+  // Shared functionality
+  const {
+    sending,
+    setSending,
+    message,
+    setMessage,
+    showConfirmModal,
+    previewImageUrl,
+    getRecipientUserId,
+    getRecipientName,
+    showConfirmPreview,
+    handleCancelSend,
+    cleanupPreview,
+  } = useCanvasShared(user);
 
   // Function to measure canvas container dimensions
   const measureCanvasContainer = useCallback(() => {
@@ -53,7 +62,7 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
     return () => window.removeEventListener('resize', handleResize);
   }, [measureCanvasContainer]);
 
-  // Create initial white rectangle covering the entire canvas
+  // Create initial rectangle covering the entire canvas with current canvas color
   const initialElements = useMemo(() => {
     return convertToExcalidrawElements([
       {
@@ -63,16 +72,17 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
         width: canvasDimensions.width,
         height: canvasDimensions.height,
         strokeColor: "transparent",
-        backgroundColor: "#ffffff",
+        backgroundColor: canvasColor,
         fillStyle: "solid",
         strokeWidth: 0,
         strokeStyle: "solid",
         roughness: 0,
+        locked: true,
       }
     ]);
-  }, [canvasDimensions.width, canvasDimensions.height]);
+  }, [canvasDimensions.width, canvasDimensions.height, canvasColor]);
 
-  // Initial data with the white rectangle and black background
+  // Initial data with the rectangle and black background
   const initialCanvasData = useMemo(() => ({
     elements: initialElements,
     appState: {
@@ -89,6 +99,47 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
     }
   }, [initialElements]);
 
+  const handleCanvasColorClick = () => {
+    setTempCanvasColor(canvasColor);
+    setShowColorModal(true);
+  };
+
+  const handleCanvasColorChange = () => {
+    setCanvasColor(tempCanvasColor);
+    setShowColorModal(false);
+    
+    // Update the canvas background color
+    if (excalidrawRef.current) {
+      const elements = excalidrawRef.current.getSceneElements();
+      
+      // Find the canvas background element (it should be locked and have the exact canvas dimensions)
+      const canvasElementIndex = elements.findIndex((element: any) => 
+        element.locked === true &&
+        element.type === "rectangle" &&
+        element.x === 0 &&
+        element.y === 0 &&
+        Math.abs(element.height - canvasDimensions.height) < 1 && 
+        Math.abs(element.width - canvasDimensions.width) < 1
+      );
+      
+      if (canvasElementIndex !== -1) {
+        // Create a new elements array with the updated canvas background
+        const updatedElements = [...elements];
+        updatedElements[canvasElementIndex] = {
+          ...elements[canvasElementIndex],
+          backgroundColor: tempCanvasColor
+        };
+        
+        excalidrawRef.current.updateScene({ elements: updatedElements });
+      }
+    }
+  };
+
+  const handleCanvasColorCancel = () => {
+    setShowColorModal(false);
+    setTempCanvasColor(canvasColor);
+  };
+
   const handleSendNote = async () => {
     if (!excalidrawRef.current) {
       setMessage('❌ Canvas not ready. Please try again.');
@@ -102,42 +153,12 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
       const elements = excalidrawRef.current.getSceneElements();
       const appState = excalidrawRef.current.getAppState();
       
-      if (!elements || elements.length === 0) {
+      // Get the element with the same height and width as the canvas
+      const canvasElement = elements.find((element: any) => element.height === canvasDimensions.height && element.width === canvasDimensions.width);
+      if (!canvasElement) {
         setMessage('❌ Please draw something before sending!');
         return;
       }
-
-      // Calculate the bounds of the white rectangle (drawing area)
-      const drawingBounds = {
-        x: 0,
-        y: 0,
-        width: canvasDimensions.width,
-        height: canvasDimensions.height
-      };
-
-      // Filter elements to only include those within the drawing bounds
-      const filteredElements = elements.filter((element: any) => {
-        return true;
-        // // Keep the white background rectangle
-        // if (element.backgroundColor === "#ffffff" && element.width >= canvasDimensions.width * 0.9) {
-        //   return true;
-        // }
-        
-        // // Check if element is within drawing bounds
-        // const elementBounds = {
-        //   x1: element.x,
-        //   y1: element.y,
-        //   x2: element.x + element.width,
-        //   y2: element.y + element.height
-        // };
-        
-        // return (
-        //   elementBounds.x1 >= drawingBounds.x &&
-        //   elementBounds.y1 >= drawingBounds.y &&
-        //   elementBounds.x2 <= drawingBounds.x + drawingBounds.width &&
-        //   elementBounds.y2 <= drawingBounds.y + drawingBounds.height
-        // );
-      });
 
       // Scale to target dimensions (640x400)
       const targetWidth = 640;
@@ -147,11 +168,11 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
       const scale = Math.min(scaleX, scaleY);
 
       const blob = await exportToBlob({
-        elements: filteredElements,
+        elements: elements,
         appState: {
           ...appState,
           exportBackground: true,
-          viewBackgroundColor: "#ffffff", // Export with white background
+          viewBackgroundColor: canvasColor, // Use current canvas color
         },
         files: excalidrawRef.current.getFiles(),
         mimeType: 'image/png',
@@ -160,12 +181,13 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
           height: canvasDimensions.height * scaleY,
           scale: scale
         }),
+        exportPadding: 0,
+        exportingFrame: canvasElement,
       });
 
       // Create preview URL and show modal
       const imageUrl = URL.createObjectURL(blob);
-      setPreviewImageUrl(imageUrl);
-      setShowConfirmModal(true);
+      showConfirmPreview(imageUrl);
     } catch (error) {
       console.error('Error creating preview:', error);
       setMessage('❌ Failed to create preview. Please try again.');
@@ -178,14 +200,13 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
     }
 
     setSending(true);
-    setShowConfirmModal(false);
 
     try {
       // Export the canvas again for actual sending
       const elements = excalidrawRef.current.getSceneElements();
       const appState = excalidrawRef.current.getAppState();
       
-      // Calculate the bounds of the white rectangle (drawing area)
+      // Calculate the bounds of the canvas rectangle (drawing area)
       const drawingBounds = {
         x: 0,
         y: 0,
@@ -195,8 +216,8 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
 
       // Filter elements to only include those within the drawing bounds
       const filteredElements = elements.filter((element: any) => {
-        // Keep the white background rectangle
-        if (element.backgroundColor === "#ffffff" && element.width >= canvasDimensions.width * 0.9) {
+        // Keep the canvas background rectangle
+        if (element.width >= canvasDimensions.width * 0.9 && element.height >= canvasDimensions.height * 0.9) {
           return true;
         }
         
@@ -225,7 +246,7 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
         appState: {
           ...appState,
           exportBackground: true,
-          viewBackgroundColor: "#ffffff", // Export with white background
+          viewBackgroundColor: canvasColor, // Use current canvas color
         },
         files: excalidrawRef.current.getFiles(),
         mimeType: 'image/png',
@@ -237,11 +258,17 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
       });
 
       // Send the note via API
-      const response = await notesAPI.send(blob, user.id, getRecipientUserId());
+      const authData = getStoredUser();
+      if (!authData) {
+        setMessage('❌ Authentication expired. Please log in again.');
+        return;
+      }
+
+      const response = await notesAPI.send(blob, user.id, getRecipientUserId(), authData.password);
 
       if (response.success) {
         setMessage(`✅ Love note sent to ${getRecipientName()}! 💕`);
-        // Reset canvas to initial state with white rectangle
+        // Reset canvas to initial state with current canvas color
         if (excalidrawRef.current) {
           excalidrawRef.current.updateScene({ 
             elements: initialElements,
@@ -259,25 +286,13 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
       setMessage('❌ Failed to send note. Please try again.');
     } finally {
       setSending(false);
-      // Clean up preview URL
-      if (previewImageUrl) {
-        URL.revokeObjectURL(previewImageUrl);
-        setPreviewImageUrl(null);
-      }
-    }
-  };
-
-  const handleCancelSend = () => {
-    setShowConfirmModal(false);
-    if (previewImageUrl) {
-      URL.revokeObjectURL(previewImageUrl);
-      setPreviewImageUrl(null);
+      cleanupPreview();
     }
   };
 
   const handleClearCanvas = () => {
     if (excalidrawRef.current) {
-      // Reset to initial state with white rectangle
+      // Reset to initial state with current canvas color
       excalidrawRef.current.updateScene({ 
         elements: initialElements,
         appState: {
@@ -289,9 +304,43 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
     }
   };
 
+  const handleRecenterCanvas = () => {
+    if (excalidrawRef.current) {
+      // Recenter the canvas view
+      excalidrawRef.current.updateScene({
+        appState: {
+          ...excalidrawRef.current.getAppState(),
+          scrollX: 0,
+          scrollY: 0,
+          zoom: { value: 1 },
+        }
+      });
+
+      setMessage('🎯 Canvas recentered');
+    }
+  };
+
   return (
     <div className="canvas-page">
         <div className="canvas-side">
+          <div className="canvas-controls">
+            <button
+              onClick={handleCanvasColorClick}
+              className="control-button btn-primary"
+              disabled={sending}
+            >
+              <MdColorLens />
+              Canvas Color
+            </button>
+            <button
+              onClick={handleRecenterCanvas}
+              className="control-button btn-primary"
+              disabled={sending}
+            >
+              <MdCenterFocusStrong />
+              Recenter Canvas
+            </button>
+          </div>
         </div>
         <div className="canvas-container" ref={canvasContainerRef}>
           <Excalidraw
@@ -334,55 +383,55 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
             )}
       </div>
 
-      {/* Send Confirmation Modal */}
-      {showConfirmModal && (
+      {/* Canvas Color Modal */}
+      {showColorModal && (
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h3>Confirm Send</h3>
-              <p>Send this love note to {getRecipientName()}?</p>
+              <h3>Canvas Color</h3>
+              <p>Choose a background color for your canvas</p>
             </div>
             
             <div className="modal-preview">
-              {previewImageUrl && (
-                <img 
-                  src={previewImageUrl} 
-                  alt="Canvas preview" 
-                  className="preview-image"
+              <div className="color-picker-container">
+                <input
+                  type="color"
+                  value={tempCanvasColor}
+                  onChange={(e) => setTempCanvasColor(e.target.value)}
+                  className="color-picker"
                 />
-              )}
+              </div>
             </div>
             
             <div className="modal-actions">
               <button 
-                onClick={handleCancelSend}
+                onClick={handleCanvasColorCancel}
                 className="btn-primary"
-                disabled={sending}
               >
                 <MdCancel />
                 Cancel
               </button>
               <button 
-                onClick={handleConfirmSend}
+                onClick={handleCanvasColorChange}
                 className="btn-primary"
-                disabled={sending}
               >
-                {sending ? (
-                  <>
-                    <BsFillSendFill />
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <BsFillSendFill />
-                    Send Love Note
-                  </>
-                )}
+                <MdColorLens />
+                Apply Color
               </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Send Confirmation Modal */}
+      <SendConfirmModal
+        isOpen={showConfirmModal}
+        recipientName={getRecipientName()}
+        previewImageUrl={previewImageUrl}
+        sending={sending}
+        onConfirm={handleConfirmSend}
+        onCancel={handleCancelSend}
+      />
     </div>
   );
 };

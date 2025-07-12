@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+For projects like npm or firebase etc. do not attempt to generate generated code or files. tell me the correct commands to run instead

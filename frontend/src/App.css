@@ -30,6 +30,17 @@ html, body {
 }
 
 /* =============================================================================
+   STANDARDIZED BACKGROUND CLASS
+   ============================================================================= */
+
+.app-background {
+  background: url('background-desktop.png');
+  background-size: 600px 600px;
+  background-repeat: repeat;
+  background-attachment: fixed;
+}
+
+/* =============================================================================
    LAYOUT COMPONENTS
    ============================================================================= */
 
@@ -46,10 +57,6 @@ html, body {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: url('background-desktop.png');
-  background-size: 600px 600px;
-  background-repeat: repeat;
-  background-attachment: fixed;
   overflow: hidden;
 }
 
@@ -86,7 +93,7 @@ html, body {
   padding-bottom: 0.2rem;
   font-weight: 700;
   margin: 0;
-  background: white;
+  background: rgb(255, 255, 255);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -180,12 +187,37 @@ html, body {
   background-clip: text;
 }
 
+/* User Info in Drawer */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 0;
+}
+
+.user-profile-picture {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.user-display-name {
+  font-family: 'Montserrat', sans-serif;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
 .drawer-content {
   padding: 20px 0;
   display: flex;
   flex-direction: column;
   gap: 0;
-  height: calc(100% - 3.5rem);
+  height: calc(100% - 3.5rem - 90px); /* Subtract header (3.5rem) and user-info section (~90px) */
 }
 
 .drawer-item {
@@ -318,6 +350,7 @@ html, body {
 .canvas-side {
   width: 20vw;
   height: 100%;
+  padding: 2rem;
 }
 
 .canvas-container {
@@ -351,8 +384,8 @@ html, body {
 
 .control-button {
   font-family: 'Montserrat', sans-serif;
-  height: 15%;
-  width: 80%;
+  height: 8rem;
+  width: 100%;
   border: none;
   border-radius: 12px;
   font-size: 0.9rem;
@@ -438,17 +471,25 @@ html, body {
   box-shadow: none;
 }
 
+/* Active state for control buttons - darker shade */
+.control-button.btn-primary.active {
+  background: #8b3a3a;
+  border-color: #8b3a3a;
+  box-shadow: 0 4px 16px rgba(139, 58, 58, 0.5);
+}
+
+.control-button.btn-primary.active:hover {
+  background: #7a3333;
+  border-color: #7a3333;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(139, 58, 58, 0.6);
+}
+
 .btn-primary svg {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   margin-bottom: 0.3rem;
 }
 
-.control-button {
-  height: 15%;
-  width: 80%;
-  border-radius: 12px;
-  font-size: 1.1rem;
-}
 
 .clear-button {
   /* Inherits from btn-primary */
@@ -558,57 +599,103 @@ html, body {
   width: 100vw;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 20px;
-  background: url('/background-desktop.png');
-  background-size: 200px 200px;
-  background-repeat: repeat;
-  background-attachment: fixed;
   overflow: hidden;
   box-sizing: border-box;
-}
-
-.login-container {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.2);
-  width: 100%;
-  max-width: 400px;
-  animation: fadeIn 0.8s ease forwards;
+  gap: 30px;
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 30px;
-}
-
-.login-header h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 10px;
-  background: linear-gradient(45deg, #e91e63, #ff6b9d);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.login-header p {
-  font-family: 'Montserrat', sans-serif;
-  color: #666;
-  font-size: 1rem;
-  margin: 0;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* User Selection with Profile Pictures */
+.user-selection {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.user-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 30px;
+  border: 3px solid transparent;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #2c2c2c;
+  min-width: 140px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.user-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+}
+
+.user-card.selected {
+  border-color: #c25454;
+  box-shadow: 0 4px 20px rgba(194, 84, 84, 0.3);
+}
+
+.profile-picture {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.user-card.selected .profile-picture {
+  border-color: #c25454;
+}
+
+.user-name {
+  font-family: 'Montserrat', sans-serif;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.error-message {
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.dev-notice {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 /* =============================================================================
@@ -892,4 +979,318 @@ html, body {
   .modal-actions button {
     width: 100%;
   }
+}
+
+/* =============================================================================
+   LOADING SCREEN
+   ============================================================================= */
+
+.loading-screen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #c25454;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-screen p {
+  font-family: 'Montserrat', sans-serif;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* =============================================================================
+   ERROR AND EMPTY STATES
+   ============================================================================= */
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 40px;
+  text-align: center;
+}
+
+.error p {
+  font-family: 'Montserrat', sans-serif;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.empty-state p {
+  font-family: 'Montserrat', sans-serif;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+
+.empty-state p:first-child {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* Password Form Card */
+.password-form-card {
+  background: #2c2c2c;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.password-form-card .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.password-form-card .form-group label {
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.password-form-card .form-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  text-align: center;
+  max-width: 250px;
+  width: 100%;
+}
+
+.password-form-card .form-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+}
+
+.password-form-card .form-input:focus {
+  border-color: #c25454;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.password-form-card .error-message {
+  background: rgba(220, 38, 38, 0.2);
+  border: 1px solid rgba(220, 38, 38, 0.5);
+  color: #ff6b6b;
+  margin-top: 10px;
+}
+
+.password-form-card .hint-text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-style: italic;
+}
+
+.login-button {
+  margin-top: 20px;
+  padding: 16px 32px;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* =============================================================================
+   COLOR PICKER COMPONENTS
+   ============================================================================= */
+
+.color-picker-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.color-picker {
+  width: 80px;
+  height: 80px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.color-picker:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+}
+
+.color-picker::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.color-picker::-moz-color-swatch {
+  border: none;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.color-preview {
+  width: 120px;
+  height: 60px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.color-preview:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile responsive color picker */
+@media (max-width: 768px) {
+  .color-picker {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .color-preview {
+    width: 100px;
+    height: 50px;
+  }
+  
+  .color-picker-container {
+    gap: 15px;
+    padding: 15px;
+  }
+}
+
+/* =============================================================================
+   PAINT TOOLS COMPONENTS
+   ============================================================================= */
+
+.paint-tools {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.tool-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tool-section h4 {
+  margin: 0;
+  text-align: center;
+}
+
+.tool-grid {
+  width: 100%;
+  height: 100%;
+  gap: 0.6rem;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.tool-button {
+  width: 100%;
+  border: none;
+  padding: 0.4rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.tool-button svg {
+  font-size: 1.2rem;
+}
+
+.tool-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+
+
+.color-button {
+  padding: 12px;
+  border: 2px solid white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  color: white;
+  width: 100%;
+}
+
+.color-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.size-button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  font-weight: 500;
+}
+
+.size-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }

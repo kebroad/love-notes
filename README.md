@@ -1,4 +1,4 @@
-# Joe and Janes Love Notes 💕
+# Kevin and Nicoles Love Notes 💕
 
 A long-distance relationship gift system that allows two people to send handwritten love notes to each other's Raspberry Pi devices, displayed on beautiful e-ink screens.
 
@@ -7,7 +7,7 @@ A long-distance relationship gift system that allows two people to send handwrit
 This system consists of three interconnected applications that work together to create a seamless love note sharing experience:
 
 1. **Frontend Website** - A mobile and desktop compatible React app where users can create and send love notes
-2. **Backend API** - Golang-based Firebase Functions handling data management and API requests
+2. **Backend API** - TypeScript-based Firebase Functions handling data management and API requests
 3. **Raspberry Pi Display** - Python application that receives and displays love notes on e-ink displays
 
 ## Architecture Overview
@@ -15,11 +15,12 @@ This system consists of three interconnected applications that work together to 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────────┐
 │  Frontend Web   │    │   Backend API    │    │   Raspberry Pi      │
-│   React + TS    │◄──►│ Golang Functions │◄──►│  Python + Inky      │
+│   React + TS    │◄──►│TypeScript Functions│◄──►│  Python + Inky      │
 │                 │    │                  │    │                     │
 │ • Excalidraw    │    │ • Authentication │    │ • Continuous Poll   │
-│ • Canvas        │    │ • Image Storage  │    │ • E-ink Display     │
-│ • Auth UI       │    │ • Database Ops   │    │ • Image Rendering   │
+│ • react-artboard│    │ • Image Storage  │    │ • E-ink Display     │
+│ • Canvas        │    │ • Database Ops   │    │ • Image Rendering   │
+│ • Auth UI       │    │                  │    │                     │
 └─────────────────┘    └──────────────────┘    └─────────────────────┘
          │                        │                        │
          └────────────────────────┼────────────────────────┘
@@ -38,16 +39,19 @@ This system consists of three interconnected applications that work together to 
 
 ### Frontend
 - **React 18** with TypeScript
-- **Excalidraw** for drawing interface
+- **Excalidraw** for drawing interface (Draw page)
+- **react-artboard** for painting interface (Paint page)
 - **Firebase SDK** for authentication and API calls
 - **Responsive Design** for mobile and desktop
 - **Hosted on** Firebase Hosting
 
 ### Backend
-- **Golang** with Firebase Functions
+- **TypeScript** with Firebase Functions
+- **Express** for HTTP routing
 - **Firestore** for database operations
 - **Firebase Storage** for image storage
 - **bcrypt** for password hashing
+- **Sharp** for image processing
 - **CORS** enabled for cross-origin requests
 
 ### Raspberry Pi
@@ -62,6 +66,196 @@ This system consists of three interconnected applications that work together to 
 - **Firebase Storage** - PNG image storage
 - **Firebase Hosting** - Frontend deployment
 - **Firebase Functions** - Backend API endpoints
+
+## API Endpoints
+
+The backend provides 4 main endpoints:
+
+### 1. Authentication
+```
+POST /api/login
+Content-Type: application/json
+
+{
+  "username": "kevin",
+  "password": "Password123!"
+}
+```
+
+### 2. Get Users
+```
+GET /api/users
+```
+
+### 3. Create Image
+```
+POST /api/create-image
+Content-Type: application/json
+
+{
+  "userId": "kevin",
+  "imageBase64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
+  "metadata": {
+    "width": 640,
+    "height": 400,
+    "format": "png"
+  }
+}
+```
+
+### 4. Get Latest Image
+```
+GET /api/latest-image/:userId
+```
+
+## Quick Start
+
+### Prerequisites
+- Node.js 18+
+- Firebase CLI
+- Make (optional, for Makefile commands)
+
+### Setup & Development
+
+1. **Install dependencies:**
+   ```bash
+   make install
+   # or manually:
+   cd frontend && npm install
+   cd backend && npm install
+   ```
+
+2. **Start development servers:**
+   ```bash
+   make dev
+   # This starts both frontend (port 3000) and backend (port 5001)
+   ```
+
+3. **Seed test data:**
+   ```bash
+   make seed
+   ```
+
+4. **Visit the app:**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:5001
+   - Firebase Emulator UI: http://localhost:4000
+
+### Test Credentials
+- **Kevin**: username=`kevin`, password=`Password123!`
+- **Nicole**: username=`nicole`, password=`Password123!`
+
+## Local Development
+
+### Prerequisites
+
+- Node.js 18+
+- Firebase CLI (`npm install -g firebase-tools`)
+- Java Runtime (for Firebase emulators)
+
+### Quick Start
+
+**Option 1: Using the development script (recommended)**
+```bash
+# First time setup
+./dev.sh setup
+
+# Start development environment
+./dev.sh start
+```
+
+**Option 2: Using Make commands**
+1. **First time setup:**
+   ```bash
+   make setup
+   ```
+
+2. **Start development environment:**
+   ```bash
+   make dev
+   ```
+
+This will:
+- Clean up any existing processes on Firebase ports
+- Start Firebase emulators (Functions, Firestore, Storage)
+- Build the backend
+- Seed the database with test data
+- Start the frontend development server
+
+3. **Access the application:**
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:5001/love-notes-kb-2025/us-central1/api
+   - Firebase Emulator UI: http://localhost:4000
+
+### Development Scripts
+
+**Using the development script:**
+```bash
+./dev.sh [command]
+```
+
+| Command | Description |
+|---------|-------------|
+| `./dev.sh start` | Start complete development environment |
+| `./dev.sh stop` | Stop all development servers |
+| `./dev.sh restart` | Restart all development servers |
+| `./dev.sh setup` | First time setup (install dependencies) |
+| `./dev.sh seed` | Seed database with test data |
+| `./dev.sh health` | Check health of all services |
+| `./dev.sh clean` | Clean up ports and processes |
+| `./dev.sh clean-dev` | Complete development cleanup (stop all services) |
+| `./dev.sh help` | Show help message |
+
+### Development Commands
+
+| Command | Description |
+|---------|-------------|
+| `make dev` | Start complete development environment |
+| `make emulator` | Start Firebase emulators only |
+| `make frontend` | Start frontend development server only |
+| `make backend` | Start backend/emulators only |
+| `make seed` | Seed database with test data |
+| `make clean-ports` | Kill processes using Firebase ports |
+| `make clean-dev` | Complete development cleanup (stop all services) |
+| `make stop` | Stop all development servers |
+| `make restart` | Restart all development servers |
+| `make health` | Check status of all services |
+| `make build` | Build for production |
+
+### Test Credentials
+
+- **Kevin**: username=`kevin`, password=`password123`
+- **Nicole**: username=`nicole`, password=`password123`
+
+### Troubleshooting
+
+**Complete cleanup for fresh start:**
+```bash
+make clean-dev
+# or
+./dev.sh clean-dev
+```
+
+**Port conflicts:**
+```bash
+make clean-ports
+```
+
+**Emulators not starting:**
+```bash
+make stop
+make emulator
+```
+
+**Database not seeded:**
+```bash
+make seed
+```
+
+**Check service health:**
+```bash
+make health
+```
 
 ## Hardware Requirements
 
@@ -79,7 +273,10 @@ love-notes/
 ├── README.md
 ├── .gitignore
 ├── firebase.json
-├── .firebaserc
+├── firestore.rules
+├── firestore.indexes.json
+├── storage.rules
+├── Makefile
 │
 ├── frontend/                    # React TypeScript Frontend
 │   ├── package.json
@@ -98,19 +295,23 @@ love-notes/
 │   │   └── main.tsx
 │   └── public/
 │
-├── backend/                     # Golang Firebase Functions
-│   ├── go.mod
-│   ├── go.sum
-│   ├── main.go
-│   ├── handlers/
-│   │   ├── auth.go
-│   │   ├── notes.go
-│   │   └── middleware.go
-│   ├── models/
-│   │   └── types.go
-│   └── utils/
-│       ├── firebase.go
-│       └── validation.go
+├── backend/                     # TypeScript Firebase Functions
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── src/
+│   │   ├── index.ts
+│   │   ├── handlers/
+│   │   │   ├── auth.ts
+│   │   │   ├── users.ts
+│   │   │   └── images.ts
+│   │   ├── types/
+│   │   │   └── index.ts
+│   │   ├── utils/
+│   │   │   ├── firebase.ts
+│   │   │   └── auth.ts
+│   │   └── scripts/
+│   │       └── seedData.ts
+│   └── lib/                     # Compiled JavaScript
 │
 ├── raspberry-pi/                # Python Display Application
 │   ├── requirements.txt
@@ -135,12 +336,12 @@ love-notes/
 
 ## Implementation Phases
 
-### Phase 1: Project Setup & Infrastructure (Week 1)
+### Phase 1: Project Setup & Infrastructure ✅
 **Deliverables:**
-- [ ] Firebase project creation and configuration
-- [ ] Repository structure setup
-- [ ] Basic CI/CD pipeline
-- [ ] Development environment documentation
+- [x] Firebase project creation and configuration
+- [x] Repository structure setup
+- [x] Basic CI/CD pipeline
+- [x] Development environment documentation
 
 **Tasks:**
 1. Initialize Firebase project
@@ -149,55 +350,63 @@ love-notes/
 4. Create development and production environments
 5. Set up basic security rules
 
-### Phase 2: Backend API Development (Week 2)
+### Phase 2: Backend API Development ✅
 **Deliverables:**
-- [ ] Authentication system
-- [ ] Love note storage API
-- [ ] Raspberry Pi polling API
-- [ ] Database schema implementation
+- [x] Authentication system with bcrypt hashing
+- [x] Love note storage API with image processing
+- [x] User management endpoints
+- [x] Database schema implementation
+- [x] Local development with mock data
 
 **API Endpoints:**
 ```
-POST /api/auth/login           # User authentication
-POST /api/notes/send           # Upload and store love note
-GET  /api/notes/latest/:userId # Get latest note for Raspberry Pi
-GET  /api/notes/history/:userId # Get note history (optional)
+POST /api/login           # User authentication
+GET  /api/users           # Get user information
+POST /api/create-image    # Upload and store love note
+GET  /api/latest-image/:userId # Get latest note for user
 ```
 
 **Database Schema:**
 ```javascript
 // Users Collection
 {
-  id: "user_joe" | "user_jane",
-  username: "joe" | "jane",
+  id: "kevin" | "nicole",
+  username: "kevin" | "nicole",
+  name: "Kevin" | "Nicole",
+  email: "kevin@example.com",
   passwordHash: "bcrypt_hash",
   salt: "random_salt",
+  imageUrl: "profile-images/kevin.jpg",
   createdAt: timestamp,
-  lastLogin: timestamp
+  lastLogin: timestamp,
+  lastImageTimestamp: number
 }
 
 // Notes Collection
 {
   id: "auto_generated",
-  fromUserId: "user_joe" | "user_jane",
-  toUserId: "user_jane" | "user_joe",
-  imageUrl: "gs://bucket/path/to/image.png",
+  fromUserId: "kevin" | "nicole",
+  toUserId: "nicole" | "kevin",
+  timestamp: number,
+  imageUrl: "images/kevin/1234567890.png",
   createdAt: timestamp,
   deliveredAt: timestamp | null,
   metadata: {
-    imageSize: number,
-    dimensions: { width: 640, height: 400 }
+    width: 640,
+    height: 400,
+    format: "png",
+    size: number
   }
 }
 ```
 
 ### Phase 3: Frontend Development (Week 3)
 **Deliverables:**
-- [ ] React application with TypeScript
-- [ ] Excalidraw integration
-- [ ] Authentication UI
-- [ ] Love note creation interface
-- [ ] Responsive design implementation
+- [x] React application with TypeScript
+- [x] Dual canvas interface (Draw & Paint)
+- [x] Authentication UI
+- [x] Love note creation interface
+- [x] Responsive design implementation
 
 **Key Components:**
 1. **Authentication Flow**
@@ -205,18 +414,26 @@ GET  /api/notes/history/:userId # Get note history (optional)
    - Session management
    - Route protection
 
-2. **Canvas Interface**
-   - Excalidraw component integration
-   - 60% page width with 8:5 aspect ratio (maintains 640x400 export ratio)
-   - Responsive sizing: 80% on tablets, 95% on mobile
-   - Drawing tools and colors
-   - Clear/undo functionality
-   - Optimized for e-ink display compatibility
+2. **Dual Canvas Interface**
+   - **Draw Page**: Excalidraw component integration
+     - Vector-based drawing with precise geometric shapes
+     - Optimized for technical drawings and structured content
+   - **Paint Page**: react-artboard component integration
+     - Brush-based painting with realistic art tools
+     - Includes pencil, brush, marker, airbrush, watercolor, and eraser
+     - Color picker and adjustable brush sizes
+   - Both canvases:
+     - 60% page width with 8:5 aspect ratio (maintains 640x400 export ratio)
+     - Responsive sizing: 80% on tablets, 95% on mobile
+     - Optimized for e-ink display compatibility
+     - Send note functionality with preview
+     - Clear/undo functionality
 
 3. **Note Management**
-   - Send note functionality
+   - Send note functionality with preview modal
    - Note history view
    - Success/error feedback
+   - Shared components for common functionality
 
 ### Phase 4: Raspberry Pi Application (Week 4)
 **Deliverables:**
@@ -249,153 +466,80 @@ GET  /api/notes/history/:userId # Get note history (optional)
 - [ ] Hardware setup guide
 - [ ] User documentation
 
-## Quick Start Guide
+## Development Commands
 
-### Prerequisites
-- Node.js 18+
-- Go 1.21+
-- Python 3.9+
-- Firebase CLI
-- Git
-
-### 1. Clone and Setup
 ```bash
-git clone <repository-url>
-cd love-notes
+# Setup (first time)
+make setup
+
+# Development
+make dev                # Start both frontend and backend
+make frontend          # Start only frontend
+make backend           # Start only backend
+make seed              # Seed database with test data
+
+# Building
+make build             # Build both for production
+make clean             # Clean build artifacts
+
+# Deployment
+make deploy            # Deploy to Firebase
+make logs              # View function logs
+
+# Utilities
+make help              # Show all available commands
+make status            # Check Firebase project status
 ```
 
-### 2. Firebase Setup
-```bash
-# Install Firebase CLI
-npm install -g firebase-tools
+## Deployment
 
-# Login to Firebase
-firebase login
+### Production Deployment
+1. **Build the applications:**
+   ```bash
+   make build
+   ```
 
-# Initialize project
-firebase init
-```
+2. **Deploy to Firebase:**
+   ```bash
+   make deploy
+   ```
 
-### 3. Frontend Development
-```bash
-cd frontend
-npm install
-npm run dev
-```
+3. **Configure environment variables** (if needed):
+   ```bash
+   firebase functions:config:set somekey="someval"
+   ```
 
-### 4. Backend Development
-```bash
-cd backend
-go mod tidy
-firebase emulators:start --only functions
-```
+### Local Development
+1. **Start emulators:**
+   ```bash
+   make dev
+   ```
 
-### 5. Raspberry Pi Setup
-```bash
-cd raspberry-pi
-pip3 install -r requirements.txt
-python3 main.py
-```
+2. **Seed test data:**
+   ```bash
+   make seed
+   ```
 
-## Configuration
+3. **View emulator UI:**
+   - Visit: http://localhost:4000
 
-### Environment Variables
+## Security Features
 
-**Frontend (.env)**
-```
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-```
+- **Password Security**: bcrypt hashing with salt
+- **Rate Limiting**: Login attempt limiting
+- **Input Validation**: Sanitization and validation
+- **Firebase Security Rules**: Proper access control
+- **Image Processing**: Automatic resizing and optimization
+- **CORS**: Cross-origin resource sharing configured
 
-**Backend (Firebase Functions)**
-```
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-```
+## Contributing
 
-**Raspberry Pi (config/settings.py)**
-```python
-API_BASE_URL = "https://your-region-your-project.cloudfunctions.net/api"
-USER_ID = "user_joe"  # or "user_jane"
-POLLING_INTERVAL = 30  # seconds
-DISPLAY_TYPE = "inky_impression_4"
-```
-
-## Deployment Instructions
-
-### Frontend Deployment
-```bash
-cd frontend
-npm run build
-firebase deploy --only hosting
-```
-
-### Backend Deployment
-```bash
-cd backend
-firebase deploy --only functions
-```
-
-### Raspberry Pi Deployment
-```bash
-# Copy files to Raspberry Pi
-scp -r raspberry-pi/ pi@your-pi-ip:~/love-notes/
-
-# SSH into Raspberry Pi
-ssh pi@your-pi-ip
-
-# Install and start service
-cd ~/love-notes
-sudo cp systemd/love-notes.service /etc/systemd/system/
-sudo systemctl enable love-notes
-sudo systemctl start love-notes
-```
-
-## Security Considerations
-
-1. **Authentication**: Simple but secure password-based auth with bcrypt
-2. **CORS**: Properly configured for production domains
-3. **Firebase Rules**: Restrictive Firestore and Storage rules
-4. **Rate Limiting**: API endpoints protected against abuse
-5. **Input Validation**: All user inputs sanitized and validated
-
-## Monitoring & Maintenance
-
-- **Firebase Console**: Monitor function executions and errors
-- **Raspberry Pi Logs**: Systemd journal logging
-- **Storage Usage**: Monitor Firebase Storage consumption
-- **Performance**: Track API response times and success rates
-
-## Cost Estimation
-
-**Monthly Firebase Costs (estimated):**
-- Functions: ~$0.50/month (low usage)
-- Firestore: ~$1.00/month (minimal reads/writes)
-- Storage: ~$0.10/month (image storage)
-- Hosting: Free tier sufficient
-- **Total: ~$2/month**
-
-## Future Enhancements
-
-- [ ] Push notifications when notes are received
-- [ ] Note templates and stickers
-- [ ] Scheduling future notes
-- [ ] Photo attachments
-- [ ] Multiple display themes
-- [ ] Voice notes (audio to text)
-- [ ] Weather and date overlay
-- [ ] Battery level monitoring
-
-## Support & Troubleshooting
-
-See `docs/troubleshooting.md` for common issues and solutions.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-This project is created for personal use. Feel free to adapt for your own long-distance relationship! ❤️
-
----
-
-**Built with ❤️ for Joe and Jane** 
+This project is licensed under the MIT License - see the LICENSE file for details. 

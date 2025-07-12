@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { User, NoteHistory } from '../../types';
 import { notesAPI } from '../../services/api';
+import { getStoredUser } from '../../utils/auth';
 
 interface HistoryPageProps {
   user: User;
@@ -21,42 +22,18 @@ const HistoryPage = ({ user }: HistoryPageProps) => {
     setError('');
 
     try {
-      const response = await notesAPI.getHistory(user.id);
+      const authData = getStoredUser();
+      if (!authData) {
+        setError('Authentication expired. Please log in again.');
+        return;
+      }
+
+      const response = await notesAPI.getHistory(user.id, authData.password);
       
       if (response.success && response.data) {
         setHistory(response.data);
       } else {
-        // Mock data for development
-        setHistory({
-          sent: [
-            {
-              id: 'mock-1',
-              fromUserId: user.id,
-              toUserId: user.id === 'user_joe' ? 'user_jane' : 'user_joe',
-              imageUrl: '/drawing.png',
-              createdAt: new Date(Date.now() - 86400000).toISOString(),
-              deliveredAt: new Date(Date.now() - 86000000).toISOString(),
-              metadata: {
-                imageSize: 12345,
-                dimensions: { width: 640, height: 400 }
-              }
-            }
-          ],
-          received: [
-            {
-              id: 'mock-2',
-              fromUserId: user.id === 'user_joe' ? 'user_jane' : 'user_joe',
-              toUserId: user.id,
-              imageUrl: '/drawing.png',
-              createdAt: new Date(Date.now() - 172800000).toISOString(),
-              deliveredAt: new Date(Date.now() - 172000000).toISOString(),
-              metadata: {
-                imageSize: 12345,
-                dimensions: { width: 640, height: 400 }
-              }
-            }
-          ]
-        });
+        setError(response.error || 'Failed to load note history.');
       }
     } catch (err) {
       setError('Failed to load note history.');
@@ -74,7 +51,7 @@ const HistoryPage = ({ user }: HistoryPageProps) => {
   };
 
   const getPartnerName = () => {
-    return user.username === 'joe' ? 'Jane' : 'Joe';
+    return user.username === 'kevin' ? 'Nicole' : 'Kevin';
   };
 
   if (loading) {

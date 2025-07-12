@@ -1,12 +1,15 @@
 import { useState } from 'react';
+import { GrLogin } from "react-icons/gr";
 import type { User } from '../../types';
+import { authAPI } from '../../services/api';
+import AppTitle from '../shared/AppTitle';
 
 interface LoginPageProps {
   onLogin: (user: User) => void;
 }
 
 const LoginPage = ({ onLogin }: LoginPageProps) => {
-  const [username, setUsername] = useState<'joe' | 'jane'>('joe');
+  const [username, setUsername] = useState<'kevin' | 'nicole'>('kevin');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -24,19 +27,16 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
     }
 
     try {
-      // Development mode - accept any password
-      const mockUser: User = {
-        id: username === 'joe' ? 'user_joe' : 'user_jane',
-        username,
-        displayName: username === 'joe' ? '💙 Joe' : '💖 Jane',
-        createdAt: new Date().toISOString(),
-        lastLogin: new Date().toISOString(),
-      };
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Use the real authentication API
+      const result = await authAPI.login({ username, password });
       
-      onLogin(mockUser);
+      if (result.success && result.data) {
+        // Store password for API calls (in a real app, you'd use tokens)
+        localStorage.setItem('loveNotesPassword', password);
+        onLogin(result.data.user);
+      } else {
+        setError(result.error || 'Authentication failed');
+      }
     } catch (err) {
       setError('Login failed. Please try again.');
     } finally {
@@ -45,27 +45,38 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
   };
 
   return (
-    <div className="login-page">
-      <div className="login-container">
-        <div className="login-header">
-          <h1>Nicole and Kevin's Notes</h1>
-          <p>Send love notes to each other's Raspberry Pi</p>
+    <div className="login-page app-background">
+      <div className="login-header">
+        <AppTitle />
+      </div>
+
+      <form onSubmit={handleSubmit} className="login-form">
+        <div className="user-selection">
+          <div 
+            className={`user-card ${username === 'kevin' ? 'selected' : ''}`}
+            onClick={() => setUsername('kevin')}
+          >
+            <img 
+              src="/Kevin.jpg" 
+              alt="Kevin" 
+              className="profile-picture"
+            />
+            <span className="user-name">Kevin</span>
+          </div>
+          <div 
+            className={`user-card ${username === 'nicole' ? 'selected' : ''}`}
+            onClick={() => setUsername('nicole')}
+          >
+            <img 
+              src="/Nicole.jpg" 
+              alt="Nicole" 
+              className="profile-picture"
+            />
+            <span className="user-name">Nicole</span>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="username">Who are you?</label>
-            <select
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value as 'joe' | 'jane')}
-              className="form-select"
-            >
-              <option value="joe">💙 Joe</option>
-              <option value="jane">💖 Jane</option>
-            </select>
-          </div>
-
+        <div className="password-form-card">
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
@@ -78,18 +89,17 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
               disabled={loading}
             />
           </div>
-
           {error && <div className="error-message">{error}</div>}
-
-          <button type="submit" className="login-button btn-primary" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-
-          <div className="dev-notice">
-            🔓 Development mode: Any password works!
+          <div className="hint-text">
+            Hint: Use "password123" for both Kevin and Nicole
           </div>
-        </form>
-      </div>
+        </div>
+
+        <button type="submit" className="login-button btn-primary" disabled={loading}>
+          <GrLogin />
+          {loading ? 'Signing in...' : 'Sign In'}
+        </button>
+      </form>
     </div>
   );
 };

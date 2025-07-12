@@ -1,7 +1,7 @@
 // User types
 export interface User {
-  id: 'user_joe' | 'user_jane';
-  username: 'joe' | 'jane';
+  id: 'user_kevin' | 'user_nicole';
+  username: 'kevin' | 'nicole';
   displayName: string;
   createdAt: string;
   lastLogin: string;
@@ -10,8 +10,8 @@ export interface User {
 // Love Note types
 export interface LoveNote {
   id: string;
-  fromUserId: 'user_joe' | 'user_jane';
-  toUserId: 'user_joe' | 'user_jane';
+  fromUserId: 'user_kevin' | 'user_nicole';
+  toUserId: 'user_kevin' | 'user_nicole';
   imageUrl: string;
   createdAt: string;
   deliveredAt: string | null;
@@ -34,7 +34,7 @@ export interface ApiResponse<T> {
 
 // Authentication types
 export interface LoginRequest {
-  username: 'joe' | 'jane';
+  username: 'kevin' | 'nicole';
   password: string;
 }
 

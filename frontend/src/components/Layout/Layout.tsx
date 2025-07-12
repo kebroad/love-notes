@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TiThMenu } from "react-icons/ti";
+import { GrLogout } from "react-icons/gr";
+import { FaPencilAlt, FaPaintBrush } from "react-icons/fa";
+import { MdHistory } from "react-icons/md";
 import type { ReactNode } from 'react';
 import type { User } from '../../types';
+import AppTitle from '../shared/AppTitle';
 
 interface LayoutProps {
   user: User;
@@ -10,32 +14,11 @@ interface LayoutProps {
   children: ReactNode;
 }
 
-// Custom hook to detect mobile screen size
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth <= 600);
-    };
-
-    checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-
-    return () => {
-      window.removeEventListener('resize', checkIsMobile);
-    };
-  }, []);
-
-  return isMobile;
-};
-
 const Layout = ({ user, onLogout, children }: LayoutProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const menuRef = useRef<HTMLDivElement>(null);
-  const isMobile = useIsMobile();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -69,7 +52,7 @@ const Layout = ({ user, onLogout, children }: LayoutProps) => {
   }, [location.pathname]);
 
   return (
-    <div className="layout">
+    <div className="layout app-background">
       <header className="header">
         <div className="header-content">
           {!isMenuOpen && (
@@ -82,9 +65,7 @@ const Layout = ({ user, onLogout, children }: LayoutProps) => {
                 <TiThMenu size={"2.5rem"} />
               </button>
               
-              <h1 className="app-title">
-                {isMobile ? "K+N❤️" : "Nicole and Kevin's Notes ❤️"}
-              </h1>
+              <AppTitle />
             </>
           )}
         </div>
@@ -109,31 +90,53 @@ const Layout = ({ user, onLogout, children }: LayoutProps) => {
             <TiThMenu size={"2.5rem"} />
           </button>
           
-          <h1 className="app-title drawer-title">
-            {isMobile ? "K+N❤️" : "Nicole and Kevin's Notes ❤️"}
-          </h1>
+          <AppTitle className="drawer-title" />
+        </div>
+        
+        <div className="user-info">
+          <img 
+            src={`/${user.username === 'kevin' ? 'Kevin' : 'Nicole'}.jpg`} 
+            alt={user.username} 
+            className="user-profile-picture"
+          />
+          <span className="user-display-name">{user.displayName}</span>
         </div>
         
         <div className="drawer-content">
           <button 
-            className={`drawer-item ${location.pathname === '/canvas' ? 'active' : ''}`}
-            onClick={() => navigateTo('/canvas')}
+            className={`drawer-item ${location.pathname === '/draw' ? 'active' : ''}`}
+            onClick={() => navigateTo('/draw')}
           >
-            <span className="drawer-icon">🎨</span>
-            <span className="drawer-text">Canvas</span>
+            <span className="drawer-icon">
+              <FaPencilAlt />
+            </span>
+            <span className="drawer-text">Draw</span>
+          </button>
+          <button 
+            className={`drawer-item ${location.pathname === '/paint' ? 'active' : ''}`}
+            onClick={() => navigateTo('/paint')}
+          >
+            <span className="drawer-icon">
+              <FaPaintBrush />
+            </span>
+            <span className="drawer-text">Paint</span>
           </button>
           <button 
             className={`drawer-item ${location.pathname === '/history' ? 'active' : ''}`}
             onClick={() => navigateTo('/history')}
           >
-            <span className="drawer-icon">📖</span>
+            <span className="drawer-icon">
+              <MdHistory />
+            </span>
             <span className="drawer-text">History</span>
           </button>
           <button 
             className="drawer-item logout-item"
             onClick={onLogout}
           >
-            <span className="drawer-icon">🚪</span>
+            <span className="drawer-icon">
+              <GrLogout />
+            </span>
             <span className="drawer-text">Logout</span>
           </button>
         </div>
