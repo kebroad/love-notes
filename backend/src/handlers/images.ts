@@ -4,6 +4,29 @@ import { FieldValue } from 'firebase-admin/firestore';
 import * as bcrypt from 'bcrypt';
 import { CreateImageRequest, CreateImageResponse, GetImageResponse, ListImagesResponse, DeleteImageResponse, User } from '../types';
 
+// Helper function to generate download URL with proper error handling
+const generateDownloadUrl = async (bucket: any, fileName: string): Promise<string> => {
+  try {
+    const file = bucket.file(fileName);
+    
+    // Check if file exists first
+    const [exists] = await file.exists();
+    if (!exists) {
+      throw new Error('File does not exist');
+    }
+
+    // Make the file publicly readable and get a download URL
+    await file.makePublic();
+    
+    // Return the public URL
+    return `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+  } catch (error) {
+    console.error('Download URL generation failed:', error);
+    // Return a direct download URL as fallback
+    return `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+  }
+};
+
 // Helper function to authenticate user
 const authenticateUser = async (req: Request): Promise<string | null> => {
   try {
@@ -139,25 +162,8 @@ export const getImageHandler = async (req: Request, res: Response): Promise<void
     // Generate signed URL for the latest image
     const bucket = admin.storage().bucket();
     const fileName = `images/${author.toLowerCase()}/${userData.latest}.jpg`;
-    const file = bucket.file(fileName);
-
-    // For emulator, use a simpler URL format
-    const isEmulator = process.env.FIREBASE_STORAGE_EMULATOR_HOST;
-    let downloadUrl: string;
     
-    if (isEmulator) {
-      // Use emulator URL format
-      const emulatorHost = process.env.FIREBASE_STORAGE_EMULATOR_HOST || 'localhost:9198';
-      const bucketName = bucket.name;
-      downloadUrl = `http://${emulatorHost}/v0/b/${bucketName}/o/${encodeURIComponent(fileName)}?alt=media`;
-    } else {
-      // Use signed URL for production
-      const [signedUrl] = await file.getSignedUrl({
-        action: 'read',
-        expires: Date.now() + 15 * 60 * 1000, // 15 minutes
-      });
-      downloadUrl = signedUrl;
-    }
+    const downloadUrl = await generateDownloadUrl(bucket, fileName);
 
     const response: GetImageResponse = {
       success: true,
@@ -206,28 +212,11 @@ export const listImagesHandler = async (req: Request, res: Response): Promise<vo
 
     // Generate signed URLs for all images
     const bucket = admin.storage().bucket();
-    const isEmulator = process.env.FIREBASE_STORAGE_EMULATOR_HOST;
-    const emulatorHost = process.env.FIREBASE_STORAGE_EMULATOR_HOST || 'localhost:9198';
-    const bucketName = bucket.name;
     
     const images = await Promise.all(
       userData.images.map(async (timestamp) => {
         const fileName = `images/${author.toLowerCase()}/${timestamp}.jpg`;
-        const file = bucket.file(fileName);
-        
-        let downloadUrl: string;
-        
-        if (isEmulator) {
-          // Use emulator URL format
-          downloadUrl = `http://${emulatorHost}/v0/b/${bucketName}/o/${encodeURIComponent(fileName)}?alt=media`;
-        } else {
-          // Use signed URL for production
-          const [signedUrl] = await file.getSignedUrl({
-            action: 'read',
-            expires: Date.now() + 15 * 60 * 1000, // 15 minutes
-          });
-          downloadUrl = signedUrl;
-        }
+        const downloadUrl = await generateDownloadUrl(bucket, fileName);
 
         return {
           id: timestamp.toString(),

@@ -140,6 +140,48 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
     setTempCanvasColor(canvasColor);
   };
 
+  const exportCanvasToBlob = async () => {
+    if (!excalidrawRef.current) {
+      throw new Error('Canvas not ready');
+    }
+
+    const elements = excalidrawRef.current.getSceneElements();
+    const appState = excalidrawRef.current.getAppState();
+    
+    // Get the element with the same height and width as the canvas
+    const canvasElement = elements.find((element: any) => element.height === canvasDimensions.height && element.width === canvasDimensions.width);
+    if (!canvasElement) {
+      throw new Error('Please draw something before sending!');
+    }
+
+    // Scale to target dimensions (640x400)
+    const targetWidth = 640;
+    const targetHeight = 400;
+    const scaleX = targetWidth / canvasDimensions.width;
+    const scaleY = targetHeight / canvasDimensions.height;
+    const scale = Math.min(scaleX, scaleY);
+
+    const blob = await exportToBlob({
+      elements: elements,
+      appState: {
+        ...appState,
+        exportBackground: true,
+        viewBackgroundColor: canvasColor, // Use current canvas color
+      },
+      files: excalidrawRef.current.getFiles(),
+      mimeType: 'image/png',
+      getDimensions: () => ({ 
+        width: canvasDimensions.width * scaleX, 
+        height: canvasDimensions.height * scaleY,
+        scale: scale
+      }),
+      exportPadding: 0,
+      exportingFrame: canvasElement,
+    });
+
+    return blob;
+  };
+
   const handleSendNote = async () => {
     if (!excalidrawRef.current) {
       setMessage('❌ Canvas not ready. Please try again.');
@@ -150,47 +192,18 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
 
     try {
       // Export the canvas as PNG blob for preview
-      const elements = excalidrawRef.current.getSceneElements();
-      const appState = excalidrawRef.current.getAppState();
-      
-      // Get the element with the same height and width as the canvas
-      const canvasElement = elements.find((element: any) => element.height === canvasDimensions.height && element.width === canvasDimensions.width);
-      if (!canvasElement) {
-        setMessage('❌ Please draw something before sending!');
-        return;
-      }
-
-      // Scale to target dimensions (640x400)
-      const targetWidth = 640;
-      const targetHeight = 400;
-      const scaleX = targetWidth / canvasDimensions.width;
-      const scaleY = targetHeight / canvasDimensions.height;
-      const scale = Math.min(scaleX, scaleY);
-
-      const blob = await exportToBlob({
-        elements: elements,
-        appState: {
-          ...appState,
-          exportBackground: true,
-          viewBackgroundColor: canvasColor, // Use current canvas color
-        },
-        files: excalidrawRef.current.getFiles(),
-        mimeType: 'image/png',
-        getDimensions: () => ({ 
-          width: canvasDimensions.width * scaleX, 
-          height: canvasDimensions.height * scaleY,
-          scale: scale
-        }),
-        exportPadding: 0,
-        exportingFrame: canvasElement,
-      });
+      const blob = await exportCanvasToBlob();
 
       // Create preview URL and show modal
       const imageUrl = URL.createObjectURL(blob);
       showConfirmPreview(imageUrl);
     } catch (error) {
       console.error('Error creating preview:', error);
-      setMessage('❌ Failed to create preview. Please try again.');
+      if (error instanceof Error) {
+        setMessage(`❌ ${error.message}`);
+      } else {
+        setMessage('❌ Failed to create preview. Please try again.');
+      }
     }
   };
 
@@ -202,60 +215,8 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
     setSending(true);
 
     try {
-      // Export the canvas again for actual sending
-      const elements = excalidrawRef.current.getSceneElements();
-      const appState = excalidrawRef.current.getAppState();
-      
-      // Calculate the bounds of the canvas rectangle (drawing area)
-      const drawingBounds = {
-        x: 0,
-        y: 0,
-        width: canvasDimensions.width,
-        height: canvasDimensions.height
-      };
-
-      // Filter elements to only include those within the drawing bounds
-      const filteredElements = elements.filter((element: any) => {
-        // Keep the canvas background rectangle
-        if (element.width >= canvasDimensions.width * 0.9 && element.height >= canvasDimensions.height * 0.9) {
-          return true;
-        }
-        
-        // Check if element is within drawing bounds
-        const elementBounds = {
-          x1: element.x,
-          y1: element.y,
-          x2: element.x + element.width,
-          y2: element.y + element.height
-        };
-        
-        return (
-          elementBounds.x1 >= drawingBounds.x &&
-          elementBounds.y1 >= drawingBounds.y &&
-          elementBounds.x2 <= drawingBounds.x + drawingBounds.width &&
-          elementBounds.y2 <= drawingBounds.y + drawingBounds.height
-        );
-      });
-
-      // Scale to exact target dimensions (640x400)
-      const targetWidth = 640;
-      const targetHeight = 400;
-
-      const blob = await exportToBlob({
-        elements: filteredElements,
-        appState: {
-          ...appState,
-          exportBackground: true,
-          viewBackgroundColor: canvasColor, // Use current canvas color
-        },
-        files: excalidrawRef.current.getFiles(),
-        mimeType: 'image/png',
-        getDimensions: () => ({ 
-          width: targetWidth, 
-          height: targetHeight,
-          scale: 1
-        }),
-      });
+      // Export the canvas for actual sending
+      const blob = await exportCanvasToBlob();
 
       // Send the note via API
       const authData = getStoredUser();
@@ -283,7 +244,11 @@ const CanvasPage = ({ user }: CanvasPageProps) => {
       }
     } catch (error) {
       console.error('Error sending note:', error);
-      setMessage('❌ Failed to send note. Please try again.');
+      if (error instanceof Error) {
+        setMessage(`❌ ${error.message}`);
+      } else {
+        setMessage('❌ Failed to send note. Please try again.');
+      }
     } finally {
       setSending(false);
       cleanupPreview();

@@ -1,0 +1,16 @@
+[Unit]
+Description=Enable I2C and SPI interfaces for Love Notes Display
+DefaultDependencies=no
+After=systemd-modules-load.service
+Before=love-notes-display.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/raspi-config nonint do_i2c 0
+ExecStart=/usr/bin/raspi-config nonint do_spi 0
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target 

@@ -13,7 +13,8 @@
     "test": "npm run build && mocha --reporter spec",
     "dev": "concurrently \"tsc --watch\" \"firebase emulators:start --only functions,firestore,storage --project love-notes-kb-2025\"",
     "seed": "npm run build && node lib/scripts/seedData.js",
-    "seed-storage": "npm run build && node lib/scripts/seedStorage.js"
+    "seed-storage": "npm run build && node lib/scripts/seedStorage.js",
+    "seed-production": "npm run build && node lib/scripts/seedProduction.js"
   },
   "engines": {
     "node": "18"

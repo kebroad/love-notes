@@ -34,7 +34,7 @@ html, body {
    ============================================================================= */
 
 .app-background {
-  background: url('background-desktop.png');
+  background: url('/background-desktop.png');
   background-size: 600px 600px;
   background-repeat: repeat;
   background-attachment: fixed;

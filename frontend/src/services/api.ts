@@ -1,8 +1,35 @@
 import axios from 'axios';
 import type { ApiResponse, LoginRequest, LoginResponse, LoveNote, NoteHistory } from '../types';
 
-// API base configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/love-notes-kb-2025/us-central1/api';
+// API base configuration - automatically detect environment
+const getApiBaseUrl = () => {
+  // Check if we're in development mode
+  const isDevelopment = import.meta.env.DEV;
+  
+  // Allow override via environment variable
+  if (import.meta.env.VITE_API_BASE_URL) {
+    console.log('🔧 Using VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  
+  // Auto-detect based on environment
+  if (isDevelopment) {
+    console.log('🔧 Development mode detected - using localhost backend');
+    return 'http://localhost:5001/love-notes-kb-2025/us-central1/api';
+  } else {
+    console.log('🔧 Production mode detected - using Firebase Functions backend');
+    return 'https://us-central1-love-notes-kb-2025.cloudfunctions.net/api';
+  }
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+console.log('🔗 Final API Base URL:', API_BASE_URL);
+console.log('🔧 Environment info:', {
+  isDev: import.meta.env.DEV,
+  mode: import.meta.env.MODE,
+  prod: import.meta.env.PROD
+});
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -325,6 +352,25 @@ export const notesAPI = {
       return {
         success: false,
         error: 'Failed to load latest note.',
+      };
+    }
+  },
+};
+
+// Health check API
+export const healthAPI = {
+  check: async (): Promise<ApiResponse<{ status: string; timestamp: number }>> => {
+    try {
+      const response = await apiClient.get('/health');
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      console.error('Health check error:', error);
+      return {
+        success: false,
+        error: 'Health check failed',
       };
     }
   },

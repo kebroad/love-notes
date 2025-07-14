@@ -1,0 +1,17 @@
+# Love Notes Display - Python Dependencies
+# Install with: pip install -r requirements.txt
+# Note: inky library is installed via official Pimoroni installer
+
+# Image processing
+Pillow>=9.0.0
+
+# HTTP requests
+requests>=2.25.0
+
+# YAML configuration
+PyYAML>=6.0
+
+# GPIO and SPI support (usually pre-installed on Raspberry Pi OS)
+# These are typically available in the pimoroni virtual environment
+RPi.GPIO>=0.7.0
+spidev>=3.5 

@@ -1,0 +1,38 @@
+[Unit]
+Description=Love Notes Display Service
+After=network-online.target systemd-modules-load.service love-notes-interfaces.service
+Wants=network-online.target love-notes-interfaces.service
+Requires=systemd-modules-load.service
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=love-notes
+Group=love-notes
+WorkingDirectory=/opt/love-notes
+
+ExecStart=/usr/bin/python3 /opt/love-notes/love_notes_display.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=love-notes-display
+
+# Environment variables
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONPATH=/opt/love-notes:/home/kevin/.virtualenvs/pimoroni/lib/python3.11/site-packages
+Environment=HOME=/opt/love-notes
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log /tmp /opt/love-notes /home/kevin/.virtualenvs/pimoroni/lib/python3.11/site-packages
+
+# Allow access to GPIO and SPI for the display
+SupplementaryGroups=spi gpio i2c
+
+[Install]
+WantedBy=multi-user.target 

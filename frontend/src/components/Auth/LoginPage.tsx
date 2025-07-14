@@ -90,9 +90,6 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
             />
           </div>
           {error && <div className="error-message">{error}</div>}
-          <div className="hint-text">
-            Hint: Use "password123" for both Kevin and Nicole
-          </div>
         </div>
 
         <button type="submit" className="login-button btn-primary" disabled={loading}>

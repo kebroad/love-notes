@@ -1,0 +1,25 @@
+# Love Notes Display Configuration
+# This file should be placed at /etc/love_notes/config.yaml on the Raspberry Pi
+
+# User credentials for API authentication
+user: "kevin"
+password: "password123"
+
+# API endpoint URL
+api_url: "https://us-central1-love-notes-kb-2025.cloudfunctions.net/api"
+
+# Display settings (optional)
+display:
+  # Rotation angle (0, 90, 180, 270)
+  rotation: 0
+  
+  # Enable debug mode for more verbose logging
+  debug: false
+  
+  # Image processing settings
+  image:
+    # Background color when image doesn't fill screen
+    background_color: "white"
+    
+    # Quality setting for image processing
+    quality: "high" 
